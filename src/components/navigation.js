@@ -11,6 +11,7 @@ import { Theme, useTheme } from '@mui/material/styles';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import axios from 'axios';
+import abi from "../abi/abi.json"
 
 const style = {
   position: 'absolute',
@@ -75,7 +76,7 @@ function Navigation({setIsConnected,isConnected}) {
      console.log(accounts,"accounts")
      setAccount(accounts[0])
      localStorage.setItem("walletAddress",accounts[0]);
-    let response= await axios.post('http://localhost:3001/checkUser',{wallet_address:accounts[0]})
+    let response= await axios.post('http://localhost:3001/user/checkUser',{wallet_address:accounts[0]})
     console.log(response,"res")
       if(response.data.res===true){
         setNickName(response.data.nick_name)
@@ -149,6 +150,13 @@ function Navigation({setIsConnected,isConnected}) {
     console.log('Input 1:', signedValue);
     console.log('Input 2:', platformtype);
     console.log('Input 3:', holdingType);
+    console.log(account,signedValue,"wal")
+    const acc=localStorage.getItem("walletAddress");
+    await window.ethereum.request({ method: "eth_requestAccounts" });
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract("0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01",abi,signer);
+        contract.createChallenge(acc,signedValue*100,["0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01","0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01","0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01","0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01","0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01"],"0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01");
   //   if(window.ethereum){
   //   const provider = new ethers.providers.Web3Provider(window.ethereum)
   //   const signer = provider.getSigner()
@@ -166,7 +174,7 @@ function Navigation({setIsConnected,isConnected}) {
     // Do something with the input values, for example, log them
     console.log('Input 1:', nickName);
     setIsNickName(false);
-    let response=await axios.post('http://localhost:3001/addUser',{wallet_address:waladdress,nick_name:nickName})
+    let response=await axios.post('http://localhost:3001/user/addUser',{wallet_address:waladdress,nick_name:nickName})
     //API to send nickname
     console.log(response.data.res,"check user")
     if(response.data.res===true){
