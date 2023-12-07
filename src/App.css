@@ -56,12 +56,34 @@ max-height: 500px;
 .verify-content{
   font-size: large;
   color:#b9b8c6;
+  padding-bottom: 2%;
 }
 .verify-content-flex{
-  font-size: large;
+  font-size: medium;
   color:#b9b8c6;
   display:flex;
   flex-direction: column;
+  padding-top: 1%;
+}
+
+.verify-content-flex-inner{
+  font-size: medium;
+  color:#b9b8c6;
+  display:flex;
+  flex-direction: column;
+  padding-left: 1%;
+  padding: 2%;
+  width: 350px;
+}
+
+.content-container{
+  border: 0.5px solid black;
+  box-shadow: 6px 6px black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2%;
 }
 
 ::-webkit-scrollbar {

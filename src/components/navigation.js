@@ -55,7 +55,7 @@ function getStyles(platform, platformName, theme) {
         : theme.typography.fontWeightMedium,
   };
 }
-function Navigation({setIsConnected}) {
+function Navigation({setIsConnected,isConnected}) {
   const [account,setAccount]=useState();
   const [open, setOpen] = React.useState(false);
   const [signedValue, setSignedValue] = useState('');
@@ -81,7 +81,9 @@ function Navigation({setIsConnected}) {
         setNickName(response.data.nick_name)
         setIsConnected(true);
         setIsNickName(false);
+        localStorage.setItem("nickName",response.data.nick_name)
       }else{
+        setIsConnected(false);
         setIsNickName(true);
       }
    
@@ -96,11 +98,13 @@ function Navigation({setIsConnected}) {
   }
  
   React.useEffect(()=>{
-    console.log(localStorage.getItem("walletAddress"))
-    if(localStorage.getItem("walletAddress")!==''){
+    console.log(localStorage.getItem("nickName"))
+    if(localStorage.getItem("nickName"!==null)){
       let accountValue= localStorage.getItem("walletAddress")
+      let nickNames=localStorage.getItem("nickName")
       setAccount(accountValue);
-      if(accountValue!==null){
+      setNickName(nickNames)
+      if(nickNames!==null){
       setIsConnected(true)
       }
     }
@@ -119,10 +123,8 @@ function Navigation({setIsConnected}) {
   };
 
   const handleNickChange = (event,type) => {
-    if(type==='nick')
     setNickName(event.target.value);
-  else 
-  setWalAddressNick(event.target.value);
+ 
   };
 
   const handleChange = (event)=>{
@@ -163,15 +165,19 @@ function Navigation({setIsConnected}) {
     // event.preventDefault();
     // Do something with the input values, for example, log them
     console.log('Input 1:', nickName);
-    console.log('Input 2:', waladdressNick);
     setIsNickName(false);
-    let response=await axios.post('http://localhost:3001/addUser',{wallet_address:waladdressNick,nick_name:nickName})
+    let response=await axios.post('http://localhost:3001/addUser',{wallet_address:waladdress,nick_name:nickName})
     //API to send nickname
+    console.log(response.data.res,"check user")
     if(response.data.res===true){
-      setNickName(response.data.nick_name)
+      localStorage.setItem("nickName",nickName)
+      setIsConnected(true);
     }
    
   };
+  React.useEffect(()=>{
+console.log(isConnected)
+  },[isConnected])
 
     return (
       <div className="mainHeader">
@@ -179,7 +185,7 @@ function Navigation({setIsConnected}) {
          Incognito
          </div>
          <div className='connect-button'>
-          {account==='' || account===undefined || account===null?
+          {!isConnected?
         <Button sx={{backgroundColor:"#E69D72",color:"black" ,"&:hover": { color: 'blue'},}} onClick={connectWallet}>CONNECT WALLET</Button>
         : <Button sx={{backgroundColor:"#E69D72",color:"black","&:hover": { color: 'blue'},}} onClick={handleOpen}>ADD</Button>}
         </div>
@@ -195,9 +201,9 @@ function Navigation({setIsConnected}) {
           <div className="form-main">
 <form className="convert-form">
 <label className="form-head">Create Challenge</label>
-<div className="form-content">
+<div className="form-content-modal">
 
-<FormControl sx={{ m: 1, mt: 2,  borderRadius: "5px", background: "transparent",border: "none",
+<FormControl sx={{ m: 1, mt: 2, mb:2, borderRadius: "5px", background: "transparent",border: "none",
     backgroundColor: "#b9b8c6",opacity:0.5,width: "280px",height:"38px",color:"#2B2A3A",fontSize: "large" }}>
        <InputLabel id="demo-multiple-checkbox-label" sx={{color:"#2B2A3A",fontSize: "large",}}>Platform</InputLabel>
         <Select
@@ -280,7 +286,6 @@ function Navigation({setIsConnected}) {
 <label className="form-head">Add Nick Name</label>
 <div className="form-content">
   <input placeholder="nick"  onChange={(e)=>handleNickChange(e,"nick")} className="form-input" type="text"/>
-  <input placeholder="Address" onChange={(e)=>handleNickChange(e,"address")} className="form-input" type="text"/>
   <div className="button-form">
   <Button type="button" sx={{backgroundColor:"#E69D72",color:"black" ,"&:hover": { color: 'blue'}}} onClick={()=>{handleSubmitNick()}}>Submit</Button>
   </div>

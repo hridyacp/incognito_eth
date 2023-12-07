@@ -43,7 +43,7 @@
     font-size: 30px;
 }
 .form-content{
-    height:270px;
+    height:200px;
     padding-top: 8%;
 display: flex;
 flex-direction: column;
@@ -64,6 +64,15 @@ align-items: center;
     height:38px;
     color:#2B2A3A;  
     font-size: large; 
+}
+.form-content-modal{
+    height:230px;
+    padding-top: 8%;
+display: flex;
+flex-direction: column;
+width: 380px;
+justify-content: space-between;
+align-items: center;
 }
 input[type='text']::placeholder
 {   

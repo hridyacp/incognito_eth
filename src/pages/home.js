@@ -9,6 +9,7 @@ import { Grid } from '@mui/material';
 import Navigation from '../components/navigation';
 import '../App.css';
 import Modal from '@mui/material/Modal';
+import axios from 'axios';
 
 
 const style = {
@@ -22,50 +23,84 @@ const style = {
   boxShadow: '4px 6px 4px 6px black',
   p: 4,
   color:"#b9b8c6",
+  maxHeight:"500px",
+  overflowY:"auto",
+  scrollbarWidth: "thin"
 };
 
 function Home(){
   const [open, setOpen] = React.useState(false);
-  const [isPrivate, setIsPrivate] = React.useState(true);
   const [isConnected, setIsConnected] = React.useState(false);
   const [proverAddress,setProverAddress] =  React.useState('');
+  const [currentAddress,setCurrentAddress] =  React.useState('');
   const [openProof, setOpenProof] = React.useState(false);
+  const [challenges,setChallenges] = React.useState([]);
+  const [myChallenges,setMyChallenges] = React.useState([]);
+  const [challengeId,setChallengeId] =  React.useState('');
+  const [myProofs,setMyProofs] = React.useState([]);
+  const [isSign,setIsSign] = React.useState(false);
 
-      const handleOpen= () => setOpen(true);
-      const handleClose = () => setOpen(false);
+      const handleOpen= (id) => {setOpen(true);setChallengeId(id)};
+      const handleClose = () => {setOpen(false)}
 
-      const handleOpenProof= () => setOpenProof(true);
+      const handleOpenProof= (proof) => {setOpenProof(true);setMyProofs(proof)}
       const handleCloseProof = () => setOpenProof(false);
 
-      const handleInputChange = (event,type) => {
-        setProverAddress(event.target.value);
-      };
-
-      const handleSubmit = (event) => {
-        console.log(proverAddress,"proverAddress")
+      const handleSubmit = async(event) => {
+        let proverAdd=localStorage.getItem("walletAddress");
+        setProverAddress(localStorage.getItem("walletAddress"))
+       const proofResponse=await axios.post("http://localhost:3001/calculateProfit",{user_address:proverAdd,challenge_id:challengeId})
+       console.log(proofResponse,"pres")
+       if(proofResponse.data?.data!==null && proofResponse.data?.data!==''){
+        setIsSign(true);
+       }
+       else{
+        isSign(false);
+       }
         // Do something with the input values, for example, log them
         
       };
+      const handleSubmitSign=()=>{
+setIsSign(false);
+setOpen(false);
+      }
 
       const handleSubmitVerify=()=>{
         console.log("verify")
       }
 
       React.useEffect(()=>{
-        console.log(localStorage.getItem("walletAddress"),"local")
-        if(localStorage.getItem("walletAddress")!==null){
+        console.log(localStorage.getItem("nickName"),"local");
+        const myAddress=localStorage.getItem("walletAddress");
+        setCurrentAddress(myAddress);
+        if(localStorage.getItem("nickName")!==null){
           setIsConnected(true);
+          axios.post("http://localhost:3001/getMyChallenges",{wallet_address:myAddress}).then(async(res)=>{
+            setMyChallenges(res.data.data);
+            console.log(res.data.data,"Mychal")
+           })
         }
         else{
           setIsConnected(false);
         }
       },[isConnected])
-      console.log(isConnected,"connect")
+
+      React.useEffect(()=>{
+   axios.post("http://localhost:3001/getChallenges").then(async(res)=>{
+    setChallenges(res.data.data);
+    console.log(res.data.data)
+   })
+   .catch((err)=>{
+    console.log(err)
+   })
+      },[])
+
+      console.log(myProofs,"connect")
     return (
         <header className="main-detail-header">
             <Grid container  rowSpacing={{ xs: 1, sm: 2, md: 3 }} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
             <Grid item xs={12}>
-      <Navigation setIsConnected={(isConnected)=>setIsConnected(isConnected)}/>
+      <Navigation setIsConnected={(isConnected)=>setIsConnected(isConnected)} isConnected={isConnected}/>
   </Grid>
   {isConnected &&
   <>
@@ -80,29 +115,42 @@ function Home(){
   <Grid container item xs={12} >
   <div className='private-container'>
   <Grid container item rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-  <Grid item xs={4}>
-<Button onClick={handleOpenProof}>
-<Card sx={{ minWidth: 375 ,backgroundColor:"#2B2A3A",boxShadow:"4px 6px 4px 6px black",padding:"2%"}} >
-<CardContent sx={{ fontSize: 14, }}>
-<Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary" gutterBottom>
-Address: 
-</Typography>
-<Typography sx={{ fontSize: 14 , textAlign:"left",color:"#b9b8c6"}} color="text.secondary">
-Chain:
-</Typography>
-<Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
-Estimated Profit
-</Typography>
-<Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
-Name:
-</Typography>
-</CardContent>
-<CardActions sx={{display:"flex",justifyContent:"center",alignItems:"center"}}>
-<Button sx={{backgroundColor:"#E69D72",color:"black" ,"&:hover": { color: 'blue'}}} size="small">Get All Proofs</Button>
-</CardActions>
-</Card>
-</Button>
-</Grid>
+  {myChallenges && myChallenges?.length>0 && myChallenges?.map((myChallenge)=>{
+    return(
+<Grid item xs={4}>
+    <Button onClick={()=>{handleOpenProof(myChallenge?.proofs)}}>
+    <Card sx={{ minWidth: 375 ,backgroundColor:"#2B2A3A",boxShadow:"4px 6px 4px 6px black",padding:"2%"}} >
+      <CardContent sx={{ fontSize: 14, }}>
+        <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
+          Address: {myChallenge?.challenger_address}
+        </Typography>
+        <Typography sx={{ fontSize: 14 , textAlign:"left",color:"#b9b8c6"}} color="text.secondary">
+         Challenge ID: {myChallenge?.challenge_id}
+        </Typography>
+        <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
+          Holdings: { myChallenge?.holdings && myChallenge?.holdings?.length>0 && myChallenge?.holdings?.map((holding,index)=>{
+            console.log(holding,"hold")
+    return(
+      <div key={index}>
+    {index+1} {holding}
+      </div>
+    )})}
+        </Typography>
+        <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
+          Platform: {myChallenge?.platform}
+        </Typography>
+        <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
+          Profit %: {myChallenge?.profit_percentage}
+        </Typography>
+      </CardContent>
+      <CardActions sx={{display:"flex",justifyContent:"center",alignItems:"center"}}>
+        <Button sx={{backgroundColor:"#E69D72",color:"black" ,"&:hover": { color: 'blue'}}} size="small">Get My Profit</Button>
+      </CardActions>
+    </Card>
+    </Button>
+  </Grid>
+    )
+  })}
 
 </Grid>
 </div>
@@ -115,21 +163,34 @@ Name:
 <Grid container item xs={12} >
                      <div className='private-container'>
 <Grid container item rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+  {challenges && challenges?.length>0 && challenges?.map((challenge)=>{
+    return(
+      <>
+      {challenge?.challenger_address!==currentAddress&&
 <Grid item xs={4}>
-    <Button onClick={handleOpen}>
+    <Button onClick={isConnected?()=> handleOpen(challenge?.challenge_id):handleClose}>
     <Card sx={{ minWidth: 375 ,backgroundColor:"#2B2A3A",boxShadow:"4px 6px 4px 6px black",padding:"2%"}} >
       <CardContent sx={{ fontSize: 14, }}>
-        <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary" gutterBottom>
-          Address: 
+        <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
+          Address: {challenge?.challenger_address}
         </Typography>
         <Typography sx={{ fontSize: 14 , textAlign:"left",color:"#b9b8c6"}} color="text.secondary">
-         Chain:
+         Challenge ID: {challenge?.challenge_id}
         </Typography>
         <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
-          Estimated Profit
+          Holdings: { challenge?.holdings && challenge?.holdings?.length>0 && challenge?.holdings?.map((holding,index)=>{
+            console.log(holding,"hold")
+    return(
+      <div key={index}>
+    {index+1} {holding}
+      </div>
+    )})}
         </Typography>
         <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
-          Name:
+          Platform: {challenge?.platform}
+        </Typography>
+        <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
+          Profit %: {challenge?.profit_percentage}
         </Typography>
       </CardContent>
       <CardActions sx={{display:"flex",justifyContent:"center",alignItems:"center"}}>
@@ -138,52 +199,11 @@ Name:
     </Card>
     </Button>
   </Grid>
-  <Grid item xs={4}>
-    <Button>
-    <Card sx={{ minWidth: 375 ,backgroundColor:"#2B2A3A",boxShadow:"4px 6px 4px 6px black",padding:"2%"}} >
-      <CardContent sx={{ fontSize: 14, }}>
-        <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary" gutterBottom>
-          Address: 
-        </Typography>
-        <Typography sx={{ fontSize: 14 , textAlign:"left",color:"#b9b8c6"}} color="text.secondary">
-         Chain:
-        </Typography>
-        <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
-          Estimated Profit
-        </Typography>
-        <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
-          Name:
-        </Typography>
-      </CardContent>
-      <CardActions sx={{display:"flex",justifyContent:"center",alignItems:"center"}}>
-        <Button sx={{backgroundColor:"#E69D72",color:"black" ,"&:hover": { color: 'blue'}}} size="small">Get My Profit</Button>
-      </CardActions>
-    </Card>
-    </Button>
-  </Grid>
-  <Grid item xs={4}>
-    <Button>
-    <Card sx={{ minWidth: 375 ,backgroundColor:"#2B2A3A",boxShadow:"4px 6px 4px 6px black",padding:"2%"}} >
-      <CardContent sx={{ fontSize: 14, }}>
-        <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary" gutterBottom>
-          Address: 
-        </Typography>
-        <Typography sx={{ fontSize: 14 , textAlign:"left",color:"#b9b8c6"}} color="text.secondary">
-         Chain:
-        </Typography>
-        <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
-          Estimated Profit
-        </Typography>
-        <Typography sx={{ fontSize: 14, textAlign:"left",color:"#b9b8c6" }} color="text.secondary">
-          Name:
-        </Typography>
-      </CardContent>
-      <CardActions sx={{display:"flex",justifyContent:"center",alignItems:"center"}}>
-        <Button sx={{backgroundColor:"#E69D72",color:"black" ,"&:hover": { color: 'blue'}}} size="small">Get My Profit</Button>
-      </CardActions>
-    </Card>
-    </Button>
-  </Grid>
+    }
+    </>
+    )
+  })}
+
  
   </Grid>
   </div>
@@ -200,11 +220,15 @@ Name:
           <div className="form-main">
 <div className="verify-container">
   <div className="verify-content">
-    OK, lets get the profit!
+  {isSign?
+  <h4>Sign your message!</h4>:
+  <h4> OK, lets get the profit!</h4>}
+   
   </div>
-  <input placeholder='Address'  onChange={(e)=>handleInputChange(e)} className="form-input" type="text"/>
   <div className="button-verify">
-  <Button type="button" sx={{backgroundColor:"#E69D72",padding:"2%",color:"black" ,"&:hover": { color: 'blue'}}} onClick={()=>{handleSubmit()}}>Get My Profit</Button>
+  {isSign? <Button sx={{backgroundColor:"#E69D72",color:"black" ,"&:hover": { color: 'blue'}}} size="small" onClick={()=>{handleSubmitSign()}}>Sign</Button>
+        :   <Button type="button" sx={{backgroundColor:"#E69D72",padding:"2%",color:"black" ,"&:hover": { color: 'blue'}}} onClick={()=>{handleSubmit()}}>Get My Profit</Button>}
+ 
   </div>
  
 </div>
@@ -217,20 +241,37 @@ Name:
         onClose={handleCloseProof}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
+      
       >
         <Box sx={style}>
         
           <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-        
-
+          <Button sx={{height:"40px",color:"#b9b8c6",backgroundColor:"#2B2A3A",boxShadow:"none",cursor:"default"}} >
+                  <h3>Proofs</h3></Button>
+                
   <div className="verify-content-flex">
-    <div> Proof:</div>
+  {myProofs?.map((proof,index)=>{
+    return(
+      <div className="content-container">
+       <div className="verify-content-flex-inner" key={index}>
+       <div>Challenge ID: {proof?.challenge_id} </div>
+       <div>IPFS Proof: {proof?.ipfs_proof} </div>
+       <div>Prover Nick Name: {proof?.prover_nick_name} </div>
+       <div>Actual Profit: {proof?.actualProfit} </div>
+     
+      </div>
+     
+      <Button type="button" sx={{backgroundColor:"#E69D72",padding:"2%",width:"250px",
+       color:"black" ,"&:hover": { color: 'blue'}}} onClick={()=>{handleSubmitVerify()}}>Verify</Button>
    
-    <div> Proof:</div>
+      </div>
+    )
+  })}
+  
   </div>
  
   <div className="button-verify">
-  <Button type="button" sx={{backgroundColor:"#E69D72",padding:"2%",color:"black" ,"&:hover": { color: 'blue'}}} onClick={()=>{handleSubmitVerify()}}>Verify</Button>
+ 
   </div>
 
 
