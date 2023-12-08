@@ -166,8 +166,8 @@ function Navigation({setIsConnected,isConnected}) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         const contract = new ethers.Contract("0x634F9Bc798A228C6Ed8fD4A14A2b907498146809",abi,signer);
-        contract.createChallenge(acc,signedValue*100,["0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809"],"0x634F9Bc798A228C6Ed8fD4A14A2b907498146809");
-       const hash= await provider.getTransactionReceipt(hash);
+       const contr= contract.createChallenge(acc,signedValue*100,["0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809"],"0x634F9Bc798A228C6Ed8fD4A14A2b907498146809");
+      //  const hash= await provider.getTransactionReceipt(contr);
 
        setOpen(false)
         //   if(window.ethereum){

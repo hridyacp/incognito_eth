@@ -156,12 +156,12 @@ function Home(){
         };
       };
 
-      const handleSubmitVerify=async(cid,chalngID)=>{
+      const handleSubmitVerify=async(cid,chalngID,nicknam)=>{
         console.log( await downloadFile(cid),"cccccccccc")
         const proof= await downloadFile(cid);
         console.log(proof,"ddddddd")
         try{
-        const hashNick=await axios.post("http://localhost:3001/user/nickHash",{nick_name:nickName})
+        const hashNick=await axios.post("http://localhost:3001/user/nickHash",{nick_name:nicknam})
         await window.ethereum.request({ method: "eth_requestAccounts" });
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
@@ -401,7 +401,7 @@ console.log("challeneg created")
       </div>
      
       <Button type="button" sx={{backgroundColor:"#E69D72",padding:"2%",width:"250px",
-       color:"black" ,"&:hover": { color: 'blue'}}} onClick={()=>{handleSubmitVerify(proof?.ipfs_proof,proof?.challenge_id)}}>Verify</Button>
+       color:"black" ,"&:hover": { color: 'blue'}}} onClick={()=>{handleSubmitVerify(proof?.ipfs_proof,proof?.challenge_id,proof?.prover_nick_name)}}>Verify</Button>
    
       </div>
     )
