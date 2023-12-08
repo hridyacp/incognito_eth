@@ -61,10 +61,8 @@ function Navigation({setIsConnected,isConnected}) {
   const [account,setAccount]=useState();
   const [open, setOpen] = React.useState(false);
   const [signedValue, setSignedValue] = useState('');
-  const [waladdress, setWalAddress] = useState('');
   const [isNickName,setIsNickName] = useState(false);
   const [nickName,setNickName] = useState('');
-  const [waladdressNick, setWalAddressNick] = useState('');
   const [platformtype, setPlatformType] = useState('');
   const [holdingType, setHoldingType] = useState([]);
   const ethers = require("ethers");
@@ -79,6 +77,7 @@ function Navigation({setIsConnected,isConnected}) {
      setAccount(accounts[0])
      localStorage.setItem("walletAddress",accounts[0]);
      try{
+      console.log(accounts[0],"check")
     let response= await axios.post('http://localhost:3001/user/checkUser',{wallet_address:accounts[0]})
     console.log(response,"res")
       if(response.data.res===true){
@@ -168,7 +167,8 @@ function Navigation({setIsConnected,isConnected}) {
         const signer = provider.getSigner();
         const contract = new ethers.Contract("0x634F9Bc798A228C6Ed8fD4A14A2b907498146809",abi,signer);
         contract.createChallenge(acc,signedValue*100,["0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809"],"0x634F9Bc798A228C6Ed8fD4A14A2b907498146809");
-        
+       const hash= await provider.getTransactionReceipt(hash);
+
        setOpen(false)
         //   if(window.ethereum){
   //   const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -188,9 +188,10 @@ function Navigation({setIsConnected,isConnected}) {
     console.log('Input 1:', nickName);
     setIsNickName(false);
     try{
-    let response=await axios.post('http://localhost:3001/user/addUser',{wallet_address:waladdress,nick_name:nickName})
+      console.log(account,"add user")
+    let response=await axios.post('http://localhost:3001/user/addUser',{wallet_address:account,nick_name:nickName})
     //API to send nickname
-    console.log(response.data.res,"check user")
+  
     if(response.data.res===true){
       localStorage.setItem("nickName",nickName)
       setIsConnected(true);
