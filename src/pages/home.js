@@ -390,7 +390,7 @@ console.log("challeneg created")
        <div className="verify-content-flex-inner" key={index}>
        <div>Challenge ID: {proof?.challenge_id} </div>
        <div className="ipfs">IPFS Proof: {truncateString(proof?.ipfs_proof,16)} </div>
-       <span className="tooltiptext">{row?.transactionHash}</span>
+       <span className="tooltiptext">{proof?.ipfs_proof}</span>
        <div>Prover Nick Name: {proof?.prover_nick_name} </div>
        <div>Actual Profit: {proof?.actualProfit} </div>
      
