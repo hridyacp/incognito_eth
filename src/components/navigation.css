@@ -12,6 +12,18 @@
     color: #E0E0E0 ;
     padding:2%;
 }
+.css-1xdgd3u-MuiFormLabel-root-MuiInputLabel-root {
+    position: relative !important;
+}
+.css-v7mbjv-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root.Mui-focused .MuiOutlinedInput-notchedOutline{
+    border-color:#b9b8c6 !important;
+}
+.css-10xjfug-MuiFormLabel-root-MuiInputLabel-root{
+    position: relative !important;
+}
+.MuiOutlinedInput-notchedOutline{
+    border-color:#b9b8c6 !important;
+}
 .centerHeader{
     font-size: medium;
     padding-left: 40%;

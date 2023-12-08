@@ -34,6 +34,7 @@ const MenuProps = {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
       width: 250,
+      backgroundColor: "#b9b8c6"
     },
   },
 };
@@ -266,16 +267,15 @@ console.log(isConnected)
 
 <FormControl sx={{ m: 1, mt: 2, mb:2, borderRadius: "5px", background: "transparent",border: "none",
     backgroundColor: "#b9b8c6",opacity:0.5,width: "280px",height:"38px",color:"#2B2A3A",fontSize: "large" }}>
-       <InputLabel id="demo-multiple-checkbox-label" sx={{color:"#2B2A3A",fontSize: "large",}}>Platform</InputLabel>
+       <InputLabel focused={false} sx={{color:"#2B2A3A",fontSize: "large","&:focus": { borderColor: "#b9b8c6",outline:"none"}}}>Platform</InputLabel>
         <Select
           displayEmpty
           value={platformtype}
           onChange={handleChange}
-          input={<OutlinedInput />}
          
           MenuProps={MenuProps}
           inputProps={{ 'aria-label': 'Without label' , border:"none"}}
-          sx={{ width: "280px",height:"38px",borderColor: "#b9b8c6","&:focus": { borderColor: "#b9b8c6"}}}
+          sx={{ width: "280px",height:"38px",borderColor: "#b9b8c6","&:focus": { borderColor: "#b9b8c6",outline:"none"}}}
         >
         
           {platforms.map((platform) => (
@@ -302,8 +302,7 @@ console.log(isConnected)
           displayEmpty
           value={holdingType}
           onChange={handleChangeHolding}
-         
-          input={<OutlinedInput />}
+        
           MenuProps={MenuProps}
           renderValue={(selected) => selected.join(', ')}
           inputProps={{ 'aria-label': 'Without label' , border:"none"}}
