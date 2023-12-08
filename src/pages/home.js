@@ -46,6 +46,8 @@ function Home(){
   const ethers = require("ethers");
   const [openSnack, setOpenSnack] = React.useState(false);
   const [openSnackError, setOpenSnackError] = React.useState(false);
+  const [openSnackVerify, setOpenSnackVerify] = React.useState(false);
+  const [openSnackVerifyError, setOpenSnackVerifyError] = React.useState(false);
   const [isChallengeCreated, setIsChallengeCreated] = React.useState(false);
   // var Web3 = require('web3');
   // var web3 = new Web3(Web3.givenProvider || 'ws://some.local-or-remote.node:8546');
@@ -63,6 +65,12 @@ function Home(){
 
       const handleOpenSnackError=()=>setOpenSnackError(true)
       const handleCloseSnackError=()=>setOpenSnackError(false);
+
+      const handleOpenSnackVerify=()=>setOpenSnackVerify(true)
+      const handleCloseSnackVerify=()=>setOpenSnackVerify(false);
+
+      const handleOpenSnackVerifyError=()=>setOpenSnackVerifyError(true)
+      const handleCloseSnackVerifyError=()=>setOpenSnackVerifyError(false);
 
       const handleSubmit = async(event) => {
         let proverAdd=localStorage.getItem("walletAddress");
@@ -166,7 +174,16 @@ function Home(){
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         const contract = new ethers.Contract("0x634F9Bc798A228C6Ed8fD4A14A2b907498146809",abi,signer);
-        contract.getVerified(chalngID,`0x${proof}`,hashNick.data.data);
+       const contr= contract.getVerified(chalngID,`0x${proof}`,hashNick.data.data);
+        provider.once(contr.hash, (transaction,error) => {
+          // Emitted when the transaction has been mined
+      if(transaction){
+       handleOpenSnackVerify();
+      }
+      else{
+        handleOpenSnackVerifyError();
+        console.log(error)
+      }})
         }
         catch{
           console.log("err");
@@ -231,14 +248,14 @@ function Home(){
 
       React.useEffect(()=>{
 console.log("challeneg created")
-      },[isChallengeCreated,challenges])
+      },[isChallengeCreated,myChallenges])
 
       console.log(currentAddress,"connect")
     return (
         <header className="main-detail-header">
             <Grid container  rowSpacing={{ xs: 1, sm: 2, md: 3 }} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
             <Grid item xs={12}>
-      <Navigation setIsConnected={(isConnected)=>setIsConnected(isConnected)} isConnected={isConnected}/>
+      <Navigation setIsConnected={(isConnected)=>setIsConnected(isConnected)} isConnected={isConnected} setMyChallenges={(myChallenges)=>setMyChallenges(myChallenges)}/>
   </Grid>
   {isConnected &&
   <>
@@ -425,6 +442,16 @@ console.log("challeneg created")
 <Snackbar open={openSnackError} autoHideDuration={6000} onClose={handleCloseSnackError}>
   <Alert onClose={handleCloseSnackError} severity="error" sx={{ width: '100%' }}>
     Proof not successful!
+  </Alert>
+</Snackbar>
+<Snackbar open={openSnackVerify} autoHideDuration={6000} onClose={handleCloseSnackVerify}>
+  <Alert onClose={handleCloseSnackVerify} severity="success" sx={{ width: '100%' }}>
+    Verification successfull!
+  </Alert>
+</Snackbar>
+<Snackbar open={openSnackVerifyError} autoHideDuration={6000} onClose={handleCloseSnackVerifyError}>
+  <Alert onClose={handleCloseSnackVerifyError} severity="error" sx={{ width: '100%' }}>
+   Verification not successful!
   </Alert>
 </Snackbar>
 </Grid>  

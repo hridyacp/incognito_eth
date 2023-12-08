@@ -57,7 +57,7 @@ function getStyles(platform, platformName, theme) {
         : theme.typography.fontWeightMedium,
   };
 }
-function Navigation({setIsConnected,isConnected}) {
+function Navigation({setIsConnected,isConnected,setMyChallenges}) {
   const [account,setAccount]=useState();
   const [open, setOpen] = React.useState(false);
   const [signedValue, setSignedValue] = useState('');
@@ -105,17 +105,18 @@ function Navigation({setIsConnected,isConnected}) {
   }
  
   React.useEffect(()=>{
-    console.log(localStorage.getItem("nickName"))
-    if(localStorage.getItem("nickName"!==null)){
-      let accountValue= localStorage.getItem("walletAddress")
+    console.log(localStorage.getItem("nickName"),"wallet")
+    if(localStorage.getItem("nickName")!==null){
       let nickNames=localStorage.getItem("nickName")
-      setAccount(accountValue);
+      console.log(localStorage.getItem("walletAddress"),"accnthhh")
+      setAccount(localStorage.getItem("walletAddress"));
       setNickName(nickNames)
       if(nickNames!==null){
       setIsConnected(true)
       }
     }
   },[])
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -166,8 +167,19 @@ function Navigation({setIsConnected,isConnected}) {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         const contract = new ethers.Contract("0x634F9Bc798A228C6Ed8fD4A14A2b907498146809",abi,signer);
-       const contr= contract.createChallenge(acc,signedValue*100,["0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809"],"0x634F9Bc798A228C6Ed8fD4A14A2b907498146809");
-      //  const hash= await provider.getTransactionReceipt(contr);
+       const contr= await contract.createChallenge(acc,signedValue*100,["0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809"],"0x634F9Bc798A228C6Ed8fD4A14A2b907498146809");
+       provider.once(contr.hash, (transaction,error) => {
+        // Emitted when the transaction has been mined
+    if(transaction){
+      getMyChallenge()
+    }
+    else{
+      console.log(error)
+    }
+    })
+         console.log(contr,"contr")
+       
+      
 
        setOpen(false)
         //   if(window.ethereum){
@@ -181,6 +193,18 @@ function Navigation({setIsConnected,isConnected}) {
   // }
   };
   
+  const getMyChallenge=async()=>{
+     const addr= await ethers.utils.getAddress(account);
+      try{
+       const getMyChalResponse= await axios.post("http://localhost:3001/challenge/getMyChallenges",{wallet_address:addr})
+          setMyChallenges(getMyChalResponse.data.data);
+          console.log(getMyChalResponse.data.data,"Mychal")
+        }
+        catch{
+          console.log("err");
+        }
+    }
+
   //Event handler for nick name form
   const handleSubmitNick = async(event) => {
     // event.preventDefault();
@@ -203,6 +227,18 @@ function Navigation({setIsConnected,isConnected}) {
   React.useEffect(()=>{
 console.log(isConnected)
   },[isConnected])
+
+  React.useEffect(()=>{
+   if(window.ethereum){
+    window.ethereum.on('accountsChanged', (accounts) => {
+    if(accounts?.length===0){
+    localStorage.clear();
+    setIsConnected(false);
+    }
+  });
+   }
+  },[])
+
 
     return (
       <div className="mainHeader">
