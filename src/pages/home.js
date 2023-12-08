@@ -46,6 +46,8 @@ function Home(){
   const ethers = require("ethers");
   const [openSnack, setOpenSnack] = React.useState(false);
   const [openSnackError, setOpenSnackError] = React.useState(false);
+  const [isChallengeCreated, setIsChallengeCreated] = React.useState(false);
+
   const fetch = require('node-fetch');
 
       const handleOpen= (id) => {setOpen(true);setChallengeId(id)};
@@ -63,6 +65,7 @@ function Home(){
       const handleSubmit = async(event) => {
         let proverAdd=localStorage.getItem("walletAddress");
         setProverAddress(localStorage.getItem("walletAddress"))
+        try{
        const proofResponse=await axios.post("http://localhost:3001/calculateProfit",{user_address:proverAdd,challenge_id:challengeId})
        console.log(proofResponse,"pres")
        if(proofResponse?.data?.data!==null && proofResponse?.data?.data!==''){
@@ -72,6 +75,10 @@ function Home(){
        else{
         isSign(false);
        }
+      }
+      catch{
+        console.log("err");
+      }
         // Do something with the input values, for example, log them
         
       };
@@ -151,12 +158,17 @@ function Home(){
         console.log( await downloadFile(cid),"cccccccccc")
         const proof= await downloadFile(cid);
         console.log(proof,"ddddddd")
+        try{
         const hashNick=await axios.post("http://localhost:3001/user/nickHash",{nick_name:nickName})
         await window.ethereum.request({ method: "eth_requestAccounts" });
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const contract = new ethers.Contract("0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01",abi,signer);
+        const contract = new ethers.Contract("0x634F9Bc798A228C6Ed8fD4A14A2b907498146809",abi,signer);
         contract.getVerified(chalngID,`0x${proof}`,hashNick.data.data);
+        }
+        catch{
+          console.log("err");
+        }
       }
       async function downloadFile(cid){
         const response = await fetch(`https://gateway.lighthouse.storage/ipfs/${cid}`)
@@ -170,27 +182,54 @@ function Home(){
           const nickNm=localStorage.getItem("nickName")
           setIsConnected(true);
           setNickName(nickNm)
-          axios.post("http://localhost:3001/challenge/getMyChallenges",{wallet_address:myAddress}).then(async(res)=>{
-            setMyChallenges(res.data.data);
-            console.log(res.data.data,"Mychal")
-           })
+        getMyChallenges(myAddress)
         }
         else{
           setIsConnected(false);
         }
       },[isConnected])
 
+      const getMyChallenges=async(addrs)=>{
+        try{
+         const getMyChalResponse= await axios.post("http://localhost:3001/challenge/getMyChallenges",{wallet_address:addrs})
+            setMyChallenges(getMyChalResponse.data.data);
+            console.log(getMyChalResponse.data.data,"Mychal")
+          }
+          catch{
+            console.log("err");
+          }
+      }
+
       React.useEffect(()=>{
-   axios.post("http://localhost:3001/challenge/getChallenges").then(async(res)=>{
-    setChallenges(res.data.data);
-    console.log(res.data.data)
-   })
-   .catch((err)=>{
-    console.log(err)
-   })
+     getChallenges();
       },[])
 
-      console.log(myProofs,"connect")
+      const getChallenges= async() => {
+        try{
+         const getChallResponse= await  axios.post("http://localhost:3001/challenge/getChallenges")
+           setChallenges(getChallResponse.data.data);
+           console.log(getChallResponse.data.data)
+         }
+         catch{
+           console.log("err");
+         }
+      }
+
+      const truncateString=(str, num)=> {
+        // If the length of str is less than or equal to num
+        // just return str--don't truncate it.
+        if (str.length <= num) {
+          return str
+        }
+        // Return str truncated with '...' concatenated to the end of str.
+        return str.slice(0, num) + '...'
+      }
+
+      React.useEffect(()=>{
+console.log("challeneg created")
+      },[isChallengeCreated,challenges])
+
+      console.log(currentAddress,"connect")
     return (
         <header className="main-detail-header">
             <Grid container  rowSpacing={{ xs: 1, sm: 2, md: 3 }} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
@@ -261,7 +300,7 @@ function Home(){
   {challenges && challenges?.length>0 && challenges?.map((challenge)=>{
     return(
       <>
-      {challenge?.challenger_address!==currentAddress&&
+      {(challenge?.challenger_address).toLowerCase()!==currentAddress&&
 <Grid item xs={4}>
     <Button onClick={isConnected?()=> handleOpen(challenge?.challenge_id):handleClose}>
     <Card sx={{ minWidth: 375 ,backgroundColor:"#2B2A3A",boxShadow:"4px 6px 4px 6px black",padding:"2%"}} >
@@ -350,7 +389,8 @@ function Home(){
       <div className="content-container">
        <div className="verify-content-flex-inner" key={index}>
        <div>Challenge ID: {proof?.challenge_id} </div>
-       <div>IPFS Proof: {proof?.ipfs_proof} </div>
+       <div className="ipfs">IPFS Proof: {truncateString(proof?.ipfs_proof,16)} </div>
+       <span className="tooltiptext">{row?.transactionHash}</span>
        <div>Prover Nick Name: {proof?.prover_nick_name} </div>
        <div>Actual Profit: {proof?.actualProfit} </div>
      

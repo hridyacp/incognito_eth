@@ -6,6 +6,7 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import { Alert, Grid, Snackbar } from '@mui/material';
 import { FormControl, FormLabel, InputLabel, MenuItem, OutlinedInput, Select } from '@mui/material';
 import { Theme, useTheme } from '@mui/material/styles';
 import ListItemText from '@mui/material/ListItemText';
@@ -67,7 +68,8 @@ function Navigation({setIsConnected,isConnected}) {
   const [platformtype, setPlatformType] = useState('');
   const [holdingType, setHoldingType] = useState([]);
   const ethers = require("ethers");
-  
+  const [openSnack, setOpenSnack] = React.useState(false);
+  const [openSnackError, setOpenSnackError] = React.useState(false);
 
   const theme = useTheme();
   const connectWallet=async()=>{      
@@ -76,6 +78,7 @@ function Navigation({setIsConnected,isConnected}) {
      console.log(accounts,"accounts")
      setAccount(accounts[0])
      localStorage.setItem("walletAddress",accounts[0]);
+     try{
     let response= await axios.post('http://localhost:3001/user/checkUser',{wallet_address:accounts[0]})
     console.log(response,"res")
       if(response.data.res===true){
@@ -87,6 +90,10 @@ function Navigation({setIsConnected,isConnected}) {
         setIsConnected(false);
         setIsNickName(true);
       }
+    }
+    catch{
+      console.log("err");
+    }
    
      //If yes
      //setIsConnected(true);
@@ -117,7 +124,11 @@ function Navigation({setIsConnected,isConnected}) {
 
  console.log(account,"account")
     
+ const handleOpenSnack=()=>setOpenSnack(true)
+ const handleCloseSnack=()=>setOpenSnack(false);
 
+ const handleOpenSnackError=()=>setOpenSnackError(true)
+ const handleCloseSnackError=()=>setOpenSnackError(false);
   // Event handler for input
   const handleInputChange = (event,type) => {
     setSignedValue(event.target.value);
@@ -155,9 +166,11 @@ function Navigation({setIsConnected,isConnected}) {
     await window.ethereum.request({ method: "eth_requestAccounts" });
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const contract = new ethers.Contract("0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01",abi,signer);
-        contract.createChallenge(acc,signedValue*100,["0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01","0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01","0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01","0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01","0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01"],"0x29Bf7486Ec3a130bC60d8fcB1d8a68b644503c01");
-  //   if(window.ethereum){
+        const contract = new ethers.Contract("0x634F9Bc798A228C6Ed8fD4A14A2b907498146809",abi,signer);
+        contract.createChallenge(acc,signedValue*100,["0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809","0x634F9Bc798A228C6Ed8fD4A14A2b907498146809"],"0x634F9Bc798A228C6Ed8fD4A14A2b907498146809");
+        
+       setOpen(false)
+        //   if(window.ethereum){
   //   const provider = new ethers.providers.Web3Provider(window.ethereum)
   //   const signer = provider.getSigner()
   //   const tx = await signer.sendTransaction({
@@ -174,6 +187,7 @@ function Navigation({setIsConnected,isConnected}) {
     // Do something with the input values, for example, log them
     console.log('Input 1:', nickName);
     setIsNickName(false);
+    try{
     let response=await axios.post('http://localhost:3001/user/addUser',{wallet_address:waladdress,nick_name:nickName})
     //API to send nickname
     console.log(response.data.res,"check user")
@@ -181,7 +195,9 @@ function Navigation({setIsConnected,isConnected}) {
       localStorage.setItem("nickName",nickName)
       setIsConnected(true);
     }
-   
+  }catch{
+    console.log("err");
+  }
   };
   React.useEffect(()=>{
 console.log(isConnected)
@@ -304,6 +320,11 @@ console.log(isConnected)
           </Typography>
         </Box>
       </Modal>
+      <Snackbar open={openSnack} autoHideDuration={6000} onClose={handleCloseSnack}>
+  <Alert onClose={handleCloseSnack} severity="success" sx={{ width: '100%' }}>
+    Proof successfully created!
+  </Alert>
+</Snackbar>
       </div>
     );
   }
