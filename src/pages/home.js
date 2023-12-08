@@ -47,6 +47,8 @@ function Home(){
   const [openSnack, setOpenSnack] = React.useState(false);
   const [openSnackError, setOpenSnackError] = React.useState(false);
   const [isChallengeCreated, setIsChallengeCreated] = React.useState(false);
+  // var Web3 = require('web3');
+  // var web3 = new Web3(Web3.givenProvider || 'ws://some.local-or-remote.node:8546');
 
   const fetch = require('node-fetch');
 
@@ -181,7 +183,8 @@ function Home(){
         if(localStorage.getItem("nickName")!==null){
           const nickNm=localStorage.getItem("nickName")
           setIsConnected(true);
-          setNickName(nickNm)
+          setNickName(nickNm);
+    
         getMyChallenges(myAddress)
         }
         else{
@@ -190,8 +193,9 @@ function Home(){
       },[isConnected])
 
       const getMyChallenges=async(addrs)=>{
+      const addr= await ethers.utils.getAddress(addrs);
         try{
-         const getMyChalResponse= await axios.post("http://localhost:3001/challenge/getMyChallenges",{wallet_address:addrs})
+         const getMyChalResponse= await axios.post("http://localhost:3001/challenge/getMyChallenges",{wallet_address:addr})
             setMyChallenges(getMyChalResponse.data.data);
             console.log(getMyChalResponse.data.data,"Mychal")
           }
