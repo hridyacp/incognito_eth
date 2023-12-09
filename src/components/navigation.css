@@ -1,29 +1,44 @@
 .mainHeader{
     
     display: flex;
-    justify-content:space-evenly;
-    color: #E0E0E0 ;
+    justify-content:space-between;
+    color: black ;
     box-shadow: 4px 6px 4px 6px black;
+    font-weight: 700;
+    padding-left:20px;
+    padding-right:20px;
+ align-items: center;
 }
 .main-detail-header{
     min-height: 100vh;
     padding: 1%;
     font-size: calc(10px + 2vmin);
-    color: #E0E0E0 ;
+    color: black ;
     padding:2%;
 }
-.css-1xdgd3u-MuiFormLabel-root-MuiInputLabel-root {
+.css-1bpr5z5-MuiFormLabel-root-MuiInputLabel-root  {
     position: relative !important;
 }
 .css-v7mbjv-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root.Mui-focused .MuiOutlinedInput-notchedOutline{
-    border-color:#b9b8c6 !important;
+    border-color:black !important;
 }
-.css-10xjfug-MuiFormLabel-root-MuiInputLabel-root{
+.css-21mknd-MuiFormLabel-root-MuiInputLabel-root.Mui-focused{
     position: relative !important;
 }
 .MuiOutlinedInput-notchedOutline{
-    border-color:#b9b8c6 !important;
+    border-color:black !important;
 }
+.css-1j7jonr-MuiFormLabel-root-MuiInputLabel-root.Mui-focused {
+    color:bisque !important;
+}
+/* .css-yf8vq0-MuiSelect-nativeInput {
+    height:38px !important;
+}
+
+.css-17nqvsg-MuiFormControl-root{
+    height:38px !important;
+} */
+
 .centerHeader{
     font-size: medium;
     padding-left: 40%;
@@ -47,12 +62,29 @@
     align-items: center;
     flex-direction: column;
     font-family: "Open Sans", sans-serif;
-     border: 1px solid rgba(163, 158, 158, 0.5); 
+     border: 1px solid black;
     justify-content: center;
 }
+
+.convert-form-nick{
+   
+    padding:2%;
+       border-radius: 20px;
+       /* box-shadow: 10px 10px 10px rgba(101, 79, 79, 0.15) inset; */
+       /* padding: 10%; */
+       display: flex;
+       align-items: center;
+       flex-direction: column;
+       font-family: "Open Sans", sans-serif;
+        border: 1px solid black;
+       justify-content: center;
+       height:180px;
+   }
 .form-head{
-    font-family: "Open Sans", sans-serif;
+    font-family: 'Kalnia', serif;
+    color:black;
     font-size: 30px;
+    font-weight: 700;
 }
 .form-content{
     height:200px;
@@ -67,24 +99,25 @@ align-items: center;
     border-radius: 5px;
     /* background-color: #2f2d2d; */
     background: transparent;
-    border: none;
   box-shadow: none !important;
     /* border: 1px solid white; */
-    background-color: #b9b8c6;
+    background-color: bisque;
     opacity:0.5;
     width: 280px;
     height:38px;
     color:#2B2A3A;  
     font-size: large; 
+    margin-left:1%;
 }
 .form-content-modal{
     height:230px;
-    padding-top: 8%;
+    padding-top: 4%;
 display: flex;
 flex-direction: column;
 width: 380px;
 justify-content: space-between;
 align-items: center;
+padding-bottom: 2%;
 }
 input[type='text']::placeholder
 {   
@@ -106,10 +139,11 @@ input[type='text']::placeholder
 }
 .button-verify{
     height:100px;
-    padding-top: 8%;
+    padding-top: 1%;
 display: flex;
 flex-direction: column;
 width: 380px;
 justify-content: space-between;
 align-items: center;
+margin-bottom: 2%;
 }

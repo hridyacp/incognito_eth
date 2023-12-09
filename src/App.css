@@ -1,11 +1,46 @@
 .App{
-  background-color: #2B2A3A;
+  background-color: bisque;
 }
 .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
+.heading-main{
+  font-weight:700;
+  font-family:'Kalnia', serif;
+  color:black;
+   box-shadow:4px 6px 4px 6px black;
+   padding:10px;
+   text-align: center;
+}
+.kySfEg{
+  font-weight:700 !important;
+  font-family:'Kalnia', serif !important;
+  color:black !important;
+}
+.TYujX{
+  font-weight:700 !important;
+  font-family:'Kalnia', serif !important;
+}
 
+.datyUz{
+  color:white !important;
+  font-family: 'Kalnia', serif !important;
+}
+.iEAtBj{
+  color:white !important;
+  font-family: 'Kalnia', serif !important;
+}
+.bVJvrO{
+  box-shadow: 4px 6px 4px 6px black !important;
+}
+.heading-nodata{
+  font-weight:700;
+  font-family:'Kalnia', serif;
+  color:black;
+   padding:10px;
+   text-align: center;
+}
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -20,7 +55,7 @@
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: black;
 }
 
 .App-link {
@@ -49,18 +84,17 @@ max-height: 500px;
   box-shadow:  2px 2px 2px 2px black;
   scrollbar-width: thin;
   overflow-y: auto;
-  max-height: 500px;
- 
+  max-height: 400px;
   }
 
 .verify-content{
   font-size: large;
-  color:#b9b8c6;
-  padding-bottom: 2%;
+  color:black;
+  padding-bottom: 1%;
 }
 .verify-content-flex{
   font-size: medium;
-  color:#b9b8c6;
+  color:black;
   display:flex;
   flex-direction: column;
   padding-top: 1%;
@@ -68,7 +102,7 @@ max-height: 500px;
 
 .verify-content-flex-inner{
   font-size: medium;
-  color:#b9b8c6;
+  color:black;
   display:flex;
   flex-direction: column;
   padding-left: 1%;
@@ -83,14 +117,15 @@ max-height: 500px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 2%;
+  margin-top: 4%;
+  height:180px;
 }
 
 .ipfs .tooltiptext {
   visibility: hidden;
   width: fit-content;
   background-color: #555;
-  color: #fff;
+  color: black;
   text-align: center;
   padding: 5px 0;
   border-radius: 6px;

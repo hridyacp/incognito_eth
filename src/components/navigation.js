@@ -12,7 +12,9 @@ import { Theme, useTheme } from '@mui/material/styles';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import axios from 'axios';
-import abi from "../abi/abi.json"
+import abi from "../abi/abi.json";
+import loadingDog from '../Assets/detective-load.gif';
+import logo from '../Assets/logo.png';
 
 const style = {
   position: 'absolute',
@@ -20,11 +22,24 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 400,
-  bgcolor: '#2B2A3A',
+  bgcolor: 'bisque',
   border: '2px solid #000',
   boxShadow: '4px 6px 4px 6px black',
   p: 4,
   color:"#b9b8c6",
+};
+const stylesNick = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'bisque',
+  border: '2px solid #000',
+  boxShadow: '4px 6px 4px 6px black',
+  p: 4,
+  color:"#b9b8c6",
+  height:"220px"
 };
 
 const ITEM_HEIGHT = 48;
@@ -34,20 +49,18 @@ const MenuProps = {
     style: {
       maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
       width: 250,
-      backgroundColor: "#b9b8c6"
+      backgroundColor: "bisque"
     },
   },
 };
 
 const platforms = [
-  "One",
-  "Two",
-  "Three"
+ "Sushi Swap"
 ];
 const holdings = [
-  "Four",
-  "Five",
-  "Six"
+  "USDC",
+  "BTC",
+  "WETH"
 ];
 
 function getStyles(platform, platformName, theme) {
@@ -69,6 +82,7 @@ function Navigation({setIsConnected,isConnected,setMyChallenges}) {
   const ethers = require("ethers");
   const [openSnack, setOpenSnack] = React.useState(false);
   const [openSnackError, setOpenSnackError] = React.useState(false);
+  const [isVerified,setIsVerified] = React.useState(false);
 
   const theme = useTheme();
   const connectWallet=async()=>{      
@@ -85,7 +99,8 @@ function Navigation({setIsConnected,isConnected,setMyChallenges}) {
         setNickName(response.data.nick_name)
         setIsConnected(true);
         setIsNickName(false);
-        localStorage.setItem("nickName",response.data.nick_name)
+        localStorage.setItem("nickName",response.data.nick_name);
+        localStorage.setItem("pushID",response.data.push_address);
       }else{
         setIsConnected(false);
         setIsNickName(true);
@@ -118,7 +133,7 @@ function Navigation({setIsConnected,isConnected,setMyChallenges}) {
     }
   },[])
 
-  const handleOpen = () => setOpen(true);
+  const handleOpen = () => {setOpen(true); setIsVerified(false);}
   const handleClose = () => setOpen(false);
 
   const handleCloseNick = () => setIsNickName(false);
@@ -163,6 +178,7 @@ function Navigation({setIsConnected,isConnected,setMyChallenges}) {
     console.log('Input 2:', platformtype);
     console.log('Input 3:', holdingType);
     console.log(account,signedValue,"wal")
+    setIsVerified(true);
     const acc=localStorage.getItem("walletAddress");
     await window.ethereum.request({ method: "eth_requestAccounts" });
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -219,6 +235,7 @@ function Navigation({setIsConnected,isConnected,setMyChallenges}) {
   
     if(response.data.res===true){
       localStorage.setItem("nickName",nickName)
+      localStorage.setItem("pushID",response.data.push_address)
       setIsConnected(true);
     }
   }catch{
@@ -244,12 +261,15 @@ console.log(isConnected)
     return (
       <div className="mainHeader">
         <div className='main-logo'>
-         Incognito
+        <img src={logo} width={"160px"} height={"100px"}alt="logo"/>
+         </div>
+        <div className='main-logo'>
+         INCOGNITO INSIGHT
          </div>
          <div className='connect-button'>
           {!isConnected?
-        <Button sx={{backgroundColor:"#E69D72",color:"black" ,"&:hover": { color: 'blue'},}} onClick={connectWallet}>CONNECT WALLET</Button>
-        : <Button sx={{backgroundColor:"#E69D72",color:"black","&:hover": { color: 'blue'},}} onClick={handleOpen}>ADD</Button>}
+        <Button sx={{backgroundColor:"#E69D72",color:"black" ,fontWeight:700,fontFamily:"'Kalnia', serif",fontSize:"16px","&:hover": { color: 'black',backgroundColor:"#E69D72"},}} onClick={connectWallet}>CONNECT WALLET</Button>
+        : <Button sx={{backgroundColor:"#E69D72",color:"black",fontWeight:700,fontFamily:"'Kalnia', serif",fontSize:"16px","&:hover": { color: 'black',backgroundColor:"#E69D72"},}} onClick={handleOpen}>CREATE</Button>}
         </div>
         <Modal
         open={open}
@@ -259,15 +279,18 @@ console.log(isConnected)
       >
         <Box sx={style}>
         
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          <Typography id="modal-modal-description" sx={{ mt: 1 }}>
           <div className="form-main">
 <form className="convert-form">
+  {!isVerified ?
 <label className="form-head">Create Challenge</label>
+: <label className="form-head">The Game's Afoot!!</label>}
 <div className="form-content-modal">
-
+{!isVerified ?
+<>
 <FormControl sx={{ m: 1, mt: 2, mb:2, borderRadius: "5px", background: "transparent",border: "none",
-    backgroundColor: "#b9b8c6",opacity:0.5,width: "280px",height:"38px",color:"#2B2A3A",fontSize: "large" }}>
-       <InputLabel focused={false} sx={{color:"#2B2A3A",fontSize: "large","&:focus": { borderColor: "#b9b8c6",outline:"none"}}}>Platform</InputLabel>
+    backgroundColor: "bisque",opacity:0.5,width: "280px",height:"40px",color:"black",fontSize: "large" }}>
+       <InputLabel focused={false} sx={{color:"black",fontSize: "large","&:focus": { borderColor: "black",outline:"none",position:"relative"}}}>Platform</InputLabel>
         <Select
           displayEmpty
           value={platformtype}
@@ -275,7 +298,7 @@ console.log(isConnected)
          
           MenuProps={MenuProps}
           inputProps={{ 'aria-label': 'Without label' , border:"none"}}
-          sx={{ width: "280px",height:"38px",borderColor: "#b9b8c6","&:focus": { borderColor: "#b9b8c6",outline:"none"}}}
+          sx={{ width: "280px",height:"42px", width: "284px",borderColor: "black","&:focus": { borderColor: "black",outline:"none"}}}
         >
         
           {platforms.map((platform) => (
@@ -294,8 +317,8 @@ console.log(isConnected)
  
 
   <FormControl sx={{ m: 1, mt: 2,  borderRadius: "5px", background: "transparent",border: "none",
-    backgroundColor: "#b9b8c6",opacity:0.5,width: "280px",height:"38px",color:"#2B2A3A",fontSize: "large" }}>
-    <InputLabel id="demo-multiple-checkbox-label" sx={{color:"#2B2A3A",fontSize: "large",height:"38px"}}>Holdings</InputLabel>
+    backgroundColor: "bisque",opacity:0.5,width: "280px",height:"40px",color:"black",fontSize: "large" }}>
+    <InputLabel id="demo-multiple-checkbox-label" sx={{color:"black",fontSize: "large",height:"42px"}}>Holdings</InputLabel>
         <Select
      
         multiple
@@ -306,7 +329,7 @@ console.log(isConnected)
           MenuProps={MenuProps}
           renderValue={(selected) => selected.join(', ')}
           inputProps={{ 'aria-label': 'Without label' , border:"none"}}
-          sx={{ width: "280px",height:"38px",borderColor: "#b9b8c6","&:focus": { borderColor: "#b9b8c6"}}}
+          sx={{ width: "280px",height:"42px", width: "284px",borderColor: "#b9b8c6","&:focus": { borderColor: "#b9b8c6"}}}
         >
             
           {holdings.map((holding) => (
@@ -323,8 +346,13 @@ console.log(isConnected)
       </FormControl>
   
   <div className="button-form">
-  <Button type="button" sx={{backgroundColor:"#E69D72",color:"black" ,"&:hover": { color: 'blue'}}} onClick={()=>{handleSubmit()}}>Send</Button>
+  <Button type="button" sx={{backgroundColor:"#E69D72",color:"black" ,fontWeight:700,fontFamily:"'Kalnia', serif","&:hover": { color: 'black',backgroundColor:"#E69D72"}}} onClick={()=>{handleSubmit()}}>Create</Button>
+
   </div>
+  </>
+  :  <div style={{paddingTop:"5%"}}>
+  <img src={loadingDog} width={"140px"} height={"160px"} alt="loadinnng"></img>
+  </div>}
   </div>
  
 </form>
@@ -338,16 +366,16 @@ console.log(isConnected)
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box sx={stylesNick}>
         
-          <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          <Typography id="modal-modal-description" sx={{ mt: 2,height:"200px" }}>
           <div className="form-main">
-<form className="convert-form">
+<form className="convert-form-nick">
 <label className="form-head">Add Nick Name</label>
 <div className="form-content">
-  <input placeholder="nick"  onChange={(e)=>handleNickChange(e,"nick")} className="form-input" type="text"/>
-  <div className="button-form">
-  <Button type="button" sx={{backgroundColor:"#E69D72",color:"black" ,"&:hover": { color: 'blue'}}} onClick={()=>{handleSubmitNick()}}>Submit</Button>
+  <input placeholder="Nick Name"  onChange={(e)=>handleNickChange(e,"nick")} className="form-input" type="text"/>
+  <div className="button-form" style={{paddingTop:"1%"}}>
+  <Button type="button" sx={{backgroundColor:"#E69D72",color:"black" ,fontWeight:700,fontFamily:"'Kalnia', serif","&:hover": { color: 'black',backgroundColor:"#E69D72",}}} onClick={()=>{handleSubmitNick()}}>Submit</Button>
   </div>
   </div>
  
