@@ -87,6 +87,12 @@ max-height: 500px;
   max-height: 400px;
   }
 
+  .private-container-about{
+    width:inherit;
+    
+    max-height: 400px;
+    }
+
 .verify-content{
   font-size: large;
   color:black;

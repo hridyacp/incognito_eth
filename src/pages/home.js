@@ -395,12 +395,14 @@ console.log("challeneg created")
  <h4 className='heading-main'>About Us</h4>
 </Grid>
 <Grid container item xs={12} sx={{ padding:0}}>
-<p style={{padding:0}}>Create your own quest by choosing a DeFi swap protocol, selecting pools, and setting a profit goal. 
+  <div className='private-container-about'>
+Create your own quest by choosing a DeFi swap protocol, selecting pools, and setting a profit goal. 
 Then, watch as savvy provers step up to the plate, armed with nothing but their address and a keen strategy 
 to meet your challenge. Once they prove their prowess and your conditions are met, 
 a new door opens for a direct chat - all while keeping addresses under wraps. And the cherry on top? 
 Our cutting-edge zero-knowledge proofs ensure the prover's success is verified without ever giving away your challenge secrets. 
-It's not just finance; it's an exciting game of skill and strategy!</p>
+It's not just finance; it's an exciting game of skill and strategy!
+</div>
   </Grid>
   </>
 }
