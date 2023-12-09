@@ -107,6 +107,7 @@ console.log(ethSigner,isOpenChat,"signer")
         const signer = new ethers.Wallet(localStorage.getItem("pushID")); setEthSigner(signer);setPushAddr(pushAdd);}
 
         const handleOpenChatVerify=(pushAdd)=>{
+          setIsVerifed(false);
             setIsOpenChat(false); setOpenProof(false);  setIsOpenChatVerify(true);  const provider = new ethers.providers.Web3Provider(window.ethereum);
           const signer = new ethers.Wallet(localStorage.getItem("pushID")); setEthSignerVerify(signer);setPushAddrVerify(pushAdd);
         }
@@ -582,8 +583,8 @@ It's not just finance; it's an exciting game of skill and strategy!
      
       </div>
      {!proof?.is_proved ?
-      <Button type="button" sx={{backgroundColor:"#E69D72",padding:"2%",width:"250px",fontWeight:700,fontFamily:"'Kalnia', serif",
-       color:activeButton === index?"black":"black" ,"&:hover": { color: 'black',backgroundColor:"#E69D72"}}} onClick={()=>{activeButton===index && isVerified?handleOpenChatVerify(proof?.prover_push_address):handleSubmitVerify(proof?.ipfs_proof,proof?.challenge_id,proof?.prover_nickname,index)}}>{activeButton===index && isVerified?"Chat":activeButton===index?"Loading...":"Verify"}</Button>
+      <Button type="button" sx={{backgroundColor:activeButton===index && isVerified?"#E69D72":activeButton===index?"none":"#E69D72",padding:"2%",width:"250px",fontWeight:700,fontFamily:"'Kalnia', serif",
+       color:activeButton === index?"black":"black" ,"&:hover": { color: 'black',backgroundColor:activeButton===index && isVerified?"#E69D72":activeButton===index?"none":"#E69D72"}}} onClick={()=>{activeButton===index && isVerified?handleOpenChatVerify(proof?.prover_push_address):handleSubmitVerify(proof?.ipfs_proof,proof?.challenge_id,proof?.prover_nickname,index)}}>{activeButton===index && isVerified?"Chat":activeButton===index?"Loading...":"Verify"}</Button>
       : <Button type="button" sx={{backgroundColor:"#E69D72",padding:"2%",width:"250px",fontWeight:700,fontFamily:"'Kalnia', serif",
       color:activeButton === index?"black":"black" ,"&:hover": { color: 'black',backgroundColor:"#E69D72"}}} onClick={()=>{handleOpenChatVerify(proof?.prover_push_address)}}>{"Chat"}</Button>}
       </div>
