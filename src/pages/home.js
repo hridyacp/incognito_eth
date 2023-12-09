@@ -174,7 +174,7 @@ function Home(){
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         const contract = new ethers.Contract("0x634F9Bc798A228C6Ed8fD4A14A2b907498146809",abi,signer);
-       const contr= contract.getVerified(chalngID,`0x${proof}`,hashNick.data.data);
+       const contr= await contract.getVerified(chalngID,`0x${proof}`,hashNick.data.data);
         provider.once(contr.hash, (transaction,error) => {
           // Emitted when the transaction has been mined
       if(transaction){
@@ -412,13 +412,13 @@ console.log("challeneg created")
        <div>Challenge ID: {proof?.challenge_id} </div>
        <div className="ipfs">IPFS Proof: {truncateString(proof?.ipfs_proof,16)} </div>
        <span className="tooltiptext">{proof?.ipfs_proof}</span>
-       <div>Prover Nick Name: {proof?.prover_nick_name} </div>
+       <div>Prover Nick Name: {proof?.prover_nickname} </div>
        <div>Actual Profit: {proof?.actualProfit} </div>
      
       </div>
      
       <Button type="button" sx={{backgroundColor:"#E69D72",padding:"2%",width:"250px",
-       color:"black" ,"&:hover": { color: 'blue'}}} onClick={()=>{handleSubmitVerify(proof?.ipfs_proof,proof?.challenge_id,proof?.prover_nick_name)}}>Verify</Button>
+       color:"black" ,"&:hover": { color: 'blue'}}} onClick={()=>{handleSubmitVerify(proof?.ipfs_proof,proof?.challenge_id,proof?.prover_nickname)}}>Verify</Button>
    
       </div>
     )
