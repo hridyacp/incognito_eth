@@ -63,6 +63,10 @@ function Home(){
   const [pushAddr,setPushAddr] = React.useState(null);
   const [ethSignerVerify,setEthSignerVerify] = React.useState(null);
   const [pushAddrVerify,setPushAddrVerify] = React.useState(null);
+  const [chalengeAddress,setChalengeAddress] = React.useState(null);
+  const [profitPer,setProfitPer] = React.useState(null);
+  const [platfrm,setPlatfrm] = React.useState(null);
+  const [holdin,setHoldin] = React.useState([]);
   const  vertical  ="top";
   const horizontal = "right";
 
@@ -85,7 +89,8 @@ function Home(){
 console.log(ethSigner,isOpenChat,"signer")
   const fetch = require('node-fetch');
 
-      const handleOpen= (id) => {setOpen(true);setChallengeId(id)};
+      const handleOpen= (id,chaladd,profit,plat,hold) => {setOpen(true);setChallengeId(id); setChalengeAddress(chaladd);
+      setProfitPer(profit);setPlatfrm(plat);setHoldin(hold)};
       const handleClose = () => {setOpen(false)}
 
       const handleOpenProof= (proof) => {setOpenProof(true);setMyProofs(proof)}
@@ -131,6 +136,16 @@ console.log(ethSigner,isOpenChat,"signer")
         // Do something with the input values, for example, log them
         
       };
+
+      const formatBlockchainInfo=(challengerAddress, expectedProfitPercentag, actualProfitPercentagee, holdings, platform, solverNickname)=>{
+        // Convert hexadecimal values to integers for better readability (if needed)
+        let profitPercentage = parseInt(expectedProfitPercentag, 16);
+        let actual_profitPercentage = parseInt(actualProfitPercentagee, 16);
+        // Create the formatted string
+        let formattedString = `Challenger Address: ${challengerAddress}\nExpected Profit Percentage: ${profitPercentage}%\nActual Profit Percentage: ${actual_profitPercentage}%\nHoldings: ${holdings.join(', ')}\nPlatform: ${platform}\nSolver Nickname: ${solverNickname}`;
+    
+        return formattedString;
+    }
       const handleSubmitSign=async()=>{
         setIsVerifyLoading(true);
         await window.ethereum.request({ method: "eth_requestAccounts" });
@@ -142,7 +157,7 @@ console.log(ethSigner,isOpenChat,"signer")
           }
       
           try {
-            const signatureValue = await signer.signMessage(String(amount*100));
+            const signatureValue = await signer.signMessage(formatBlockchainInfo(chalengeAddress, profitPer*100,amount*100,holdin,platfrm,nickName));
             setSignature(signatureValue);
             console.log("Signature:", signatureValue,amount);
             const signatureResult=await getSignatureInfo(amount,signatureValue);
@@ -420,7 +435,7 @@ It's not just finance; it's an exciting game of skill and strategy!
       <>
       {(challenge?.challenger_address).toLowerCase()!==currentAddress&&
 <Grid item xs={4}>
-    <Button onClick={isConnected?()=> handleOpen(challenge?.challenge_id):handleClose}>
+    <Button onClick={isConnected?()=> handleOpen(challenge?.challenge_id,challenge?.challenger_address,challenge?.profit_percentage,challenge?.platform,challenge?.holdings):handleClose}>
     <Card sx={{ minWidth: 375 ,backgroundColor:"bisque",boxShadow:"4px 6px 4px 6px black",padding:"2%"}} >
       <CardContent sx={{ fontSize: 14, }}>
         {/* <Typography sx={{ fontSize: 14, textAlign:"left",color:"black" }} color="text.secondary">
